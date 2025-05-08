@@ -2,16 +2,8 @@ const sequelize = require('./db');
 require('../model/user.js');
 require("dotenv").config();
 
-// if (!process.env.DATABASE_URL) {
-//     throw new Error("DATABASE_URL is missing in .env file!");
-// }
 
-// const sequelize = new Sequelize(
-//   process.env.DATABASE_URL, {
-//   dialect: "postgres",
-//   logging: false, // Disable logging for cleaner console output
-// });
-
+// connecting databse
 const connectDatabase = async () => {
   try {
     await sequelize.authenticate();
