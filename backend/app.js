@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const connectDatabase = require("./config/connectDB.js");
 const authRouter = require('./routes/auth.js');
+const contributionRouter = require('./routes/contribution.js');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,6 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use('/api/auth', authRouter)
+app.use('/api/contibution', contributionRouter)
 
 // Default Route
 app.get("/", (req, res) => {
