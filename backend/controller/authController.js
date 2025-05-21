@@ -1,8 +1,27 @@
 const bcrypt = require('bcrypt');
-const User = require('../model/user');
+const User = require('../model/userModel');
+const UserProfile = require('../model/userProfile');
+const contribution = require('../model/contributionModel');
 
 const registerUser = async (req, res) => {
-    const { fullName, email, phone, password, bankName, accountNumber } = req.body;
+    const { 
+        fullName, 
+        email, 
+        phone, 
+        password,
+        sex,
+        address,
+        nextOfKin,
+        nextOfKinPhone,
+        nextOfKinAddress,
+        bankName, 
+        accountNumber,
+        numberOfAccounts, 
+        proofOfPaymentUrl,
+        depositorName,
+        clearanceFeePaid,
+
+    } = req.body;
 
     try {
 
@@ -25,8 +44,34 @@ const registerUser = async (req, res) => {
             accountNumber,
     
         });
+
+        const profile = await UserProfile.create({
+            sex,
+            address,
+            nextOfKin,
+            nextOfKinPhone,
+            nextOfKinAddress,
+            numberOfAccounts, 
+            proofOfPaymentUrl,
+            depositorName,
+            clearanceFeePaid,
+
+        });
+
+        const contributions = [];
+        for (let i = 1; i <= numberOfAccounts; i++) {
+            contributions.push({
+                userId: User.id,
+                contributionName: `Contibution #${i}`,
+                accountNumber,
+            })
+        }
     
-        res.status(201).json({ message: 'User registered Succesfully', user: newUser});
+        res.status(201).json({ 
+            message: 'User registered Succesfully with profile and contributions', 
+            user: newUser,
+            userProfile: profile,
+        });
         
     } catch (error) {
         console.error('Resgistration error:', error)

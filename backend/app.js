@@ -10,13 +10,13 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 
-app.use('/api/auth', authRouter)
-app.use('/api/contibution', contributionRouter)
-
 // Default Route
 app.get("/", (req, res) => {
   res.send("Welcome to the KC-Winners Contribution Platform API!");
 });
+
+app.use('/api/auth', authRouter)
+app.use('/api/contribution', contributionRouter)
 
 // Start Server
 

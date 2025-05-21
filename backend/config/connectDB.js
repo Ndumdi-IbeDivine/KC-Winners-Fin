@@ -1,6 +1,7 @@
 const sequelize = require('./db');
-require('../model/user.js');
-require("dotenv").config();
+require('../model/userModel.js');
+require('../model/userProfile.js');
+require('dotenv').config();
 
 
 // connecting databse
