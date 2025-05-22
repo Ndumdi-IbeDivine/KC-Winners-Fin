@@ -1,8 +1,8 @@
 const express = require('express');
 
-const { createContribution } = require('../controller/contributionController');
-
 const router = express.Router();
+
+const { createContribution } = require('../controller/contributionController');
 
 router.post('/create', createContribution);
 
