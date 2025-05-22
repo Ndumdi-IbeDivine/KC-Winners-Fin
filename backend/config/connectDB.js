@@ -1,6 +1,6 @@
 const sequelize = require('./db');
 require('../model/userModel.js');
-require('../model/userProfile.js');
+// require('../model/userProfile.js');
 require('dotenv').config();
 
 

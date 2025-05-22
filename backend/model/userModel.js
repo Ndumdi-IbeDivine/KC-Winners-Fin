@@ -34,6 +34,46 @@ const User = sequelize.define('User', {
       type: DataTypes.STRING,
       allowNull: false,
     }, 
+    sex: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    nextOfKin: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    nextOfKinPhone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    nextOfKinAddress: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    numberOfAccounts: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    proofOfPaymentUrl: {
+        type: DataTypes.STRING, 
+        allowNull: false,
+    },
+    depositorName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    clearanceFeePaid: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    clearanceFeeProofUrl: {
+        type: DataTypes.STRING, 
+        allowNull: true,
+    },
 }, {
     tableName: 'Users',
     timestamps: true,
