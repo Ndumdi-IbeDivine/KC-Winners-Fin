@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 const User = require('../model/userModel');
-const UserProfile = require('../model/userProfile');
-const contribution = require('../model/contributionModel');
+const { Contribution } = require('../model/contributionModel');
 
 const registerUser = async (req, res) => {
     const { 
@@ -23,12 +23,24 @@ const registerUser = async (req, res) => {
 
     } = req.body;
 
+    const registrationProofUrl = req.files?.registrationProof?.[0]?.path;
+    const clearanceProofUrl = req.files?.clearanceProof?.[0]?.path;
+
     try {
 
         // To check if user exists
-        const existingUser = await User.findOne({ where: {email} });
+        const existingUser = await User.findOne({ 
+            where: {
+                [Op.or]: [{ email}, { phone}]
+            }
+        });
         if(existingUser) {
-            return res.Status(400).json({ message: 'Email already in use' });
+            return res.status(400).json({ 
+                message: 
+                existingUser.email === email
+                ? 'Email already in use'
+                : 'Phone number already in use'
+            });
         }
     
         // Hash Password
@@ -42,43 +54,39 @@ const registerUser = async (req, res) => {
             password: hashedPassword, 
             bankName, 
             accountNumber,
-    
-        });
-
-        const profile = await UserProfile.create({
             sex,
             address,
             nextOfKin,
             nextOfKinPhone,
             nextOfKinAddress,
             numberOfAccounts, 
-            proofOfPaymentUrl,
+            proofOfPaymentUrl: registrationProofUrl,
             depositorName,
-            clearanceFeePaid,
-
+            clearanceProofUrl,
+            clearanceFeePaid: !!clearanceProofUrl,
+    
         });
 
         const contributions = [];
         for (let i = 1; i <= numberOfAccounts; i++) {
             contributions.push({
-                userId: User.id,
+                userId: newUser.id,
                 contributionName: `Contibution #${i}`,
                 accountNumber,
             })
         }
+        await Contribution.bulkCreate(contributions);
     
         res.status(201).json({ 
             message: 'User registered Succesfully with profile and contributions', 
             user: newUser,
-            userProfile: profile,
         });
         
     } catch (error) {
-        console.error('Resgistration error:', error)
+        console.error('Registration error:', error)
         res.status(500).json({ message: 'Server error'})
     }
 };
-
 
 
 module.exports = { registerUser };
