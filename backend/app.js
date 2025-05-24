@@ -16,8 +16,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to the KC-Winners Contribution Platform API!");
 });
 
-app.use('/api/auth', authRouter)
-app.use('/api/contribution', contributionRouter)
+app.use('/api/auth', authRouter);
+app.use('/api/contribution', contributionRouter);
 app.use('/api/admin', adminRouter);
 
 // Start Server
