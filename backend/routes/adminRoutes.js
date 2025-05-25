@@ -8,3 +8,5 @@ router.get('/unverified-proofs', getUsersWithUnverifiedProofs);
 router.patch('/verify-registration/user:id', verifyRegistration);
 
 router.patch('/verify-clearance/user:id', verifyClearance);
+
+module.exports = router;
