@@ -48,12 +48,16 @@ const RegistrationForm = () => {
       data.append('clearanceProof', clearanceProof);
 
     try {
-      console.log('📤 Submitting registration data...', data);
-      const res = await axios.post('/api/auth/register', data);
-      setMessage('✅ Registration successful!');
+      console.log('Submitting registration data...', data);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, 
+        data,
+        { withCredentials: true }
+      );
+      setMessage('Registration successful!');
       console.log(res.data);
     } catch (err) {
-      setMessage('❌ Registration failed.');
+      setMessage('Registration failed.');
       console.error('Error Submitting Registration', err.response?.data || err.message);
     } finally {
       setLoading(false);
