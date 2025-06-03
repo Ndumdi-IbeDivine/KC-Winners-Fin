@@ -1,5 +1,6 @@
 const express = require("express");
 require("dotenv").config();
+const cors = require('cors');
 const connectDatabase = require("./config/connectDB.js");
 const authRouter = require('./routes/authRoutes.js');
 const contributionRouter = require('./routes/contributionRoutes.js');
@@ -9,6 +10,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+app.use(cors({
+  origin:'http://localhost:5173',
+  credentials:true
+}));
 app.use(express.json());
 
 // Default Route
