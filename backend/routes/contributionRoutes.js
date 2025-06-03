@@ -5,6 +5,6 @@ const router = express.Router();
 const { createContribution } = require('../controller/contributionController');
 
 router.post('/create', createContribution);
-router.get('/allContributions');
+router.get('/allContributions', getAllContributions);
 
 module.exports = router;
