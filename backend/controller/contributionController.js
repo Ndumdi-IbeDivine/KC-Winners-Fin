@@ -13,5 +13,4 @@ const createContribution = async (req, res) => {
     }
 };
 
-
 module.exports = { createContribution };
