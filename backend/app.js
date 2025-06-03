@@ -1,6 +1,8 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require('cors');
+const path = require('path');
+
 const connectDatabase = require("./config/connectDB.js");
 const authRouter = require('./routes/authRoutes.js');
 const contributionRouter = require('./routes/contributionRoutes.js');
@@ -14,11 +16,12 @@ app.use(cors({
   origin:'http://localhost:5173',
   credentials:true
 }));
-app.use(express.json());
+
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Default Route
 app.get("/", (req, res) => {
-  res.send("Welcome to the KC-Winners Contribution Platform API!");
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 app.use('/api/auth', authRouter);
