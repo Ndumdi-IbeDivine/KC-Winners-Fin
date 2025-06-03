@@ -13,5 +13,9 @@ const createContribution = async (req, res) => {
     }
 };
 
+const getAllContributions = async (req, res) => {
 
-module.exports = { createContribution };
+}
+
+
+module.exports = { createContribution, getAllContributions };
