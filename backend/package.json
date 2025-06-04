@@ -28,5 +28,8 @@
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0",
     "validator": "^13.15.15"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
