@@ -27,7 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0",
-    "validator": "^13.9.0"
+    "validator":"13.9.0"
   },
   "engines": {
     "node": "20.x"
