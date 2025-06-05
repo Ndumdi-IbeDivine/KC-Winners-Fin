@@ -11,7 +11,7 @@ const connectDatabase = async () => {
     console.log("Database connected successfully");
    
     console.log("Loaded models:", sequelize.models);
-    await sequelize.sync({ alter: true})
+    await sequelize.sync({ force: true})
     console.log('Tables have been synced')
 
   } catch (error) {
