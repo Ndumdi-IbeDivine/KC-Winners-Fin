@@ -20,7 +20,7 @@ app.use(cors({
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Default Route
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
