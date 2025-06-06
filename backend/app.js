@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require('cors');
-const path = require('path');
+// const path = require('path');
 
 const connectDatabase = require("./config/connectDB.js");
 const authRouter = require('./routes/authRoutes.js');
@@ -17,11 +17,10 @@ app.use(cors({
   credentials:true
 }));
 
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Default Route
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+app.get("/", (req, res) => {
+  res.send("Welcome to KC Winners API");
 });
 
 app.use('/api/auth', authRouter);
