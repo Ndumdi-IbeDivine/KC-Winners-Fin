@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
+const jwt = require("jsonwebtoken");
 const User = require('../model/userModel');
 const { Contribution } = require('../model/contributionModel');
 
@@ -19,12 +20,10 @@ const registerUser = async (req, res) => {
         numberOfAccounts, 
         proofOfPaymentUrl,
         depositorName,
-        clearanceFeePaid,
 
     } = req.body;
 
     const registrationProofUrl = req.files?.registrationProof?.[0]?.path;
-    const clearanceProofUrl = req.files?.clearanceProof?.[0]?.path;
 
     try {
 
@@ -62,9 +61,7 @@ const registerUser = async (req, res) => {
             numberOfAccounts, 
             proofOfPaymentUrl: registrationProofUrl,
             depositorName,
-            clearanceProofUrl,
-            clearanceFeePaid: !!clearanceProofUrl,
-    
+
         });
 
         const contributions = [];
@@ -89,4 +86,34 @@ const registerUser = async (req, res) => {
 };
 
 
-module.exports = { registerUser };
+const loginUser = async (req, res) => {
+
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+        res.status(200).json({
+        message: "Login successful",
+        token,
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        },
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+
+}
+
+module.exports = { registerUser, loginUser };

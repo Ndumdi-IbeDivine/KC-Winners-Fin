@@ -66,14 +66,6 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    clearanceFeePaid: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-    },
-    clearanceFeeProofUrl: {
-        type: DataTypes.STRING, 
-        allowNull: false,
-    },
     registrationVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
