@@ -1,6 +1,6 @@
 const express = require('express');
 const upload = require('../config/cloudinary');
-const { registerUser } = require('../controller/authController');
+const { registerUser, loginUser } = require('../controller/authController');
 const uploadMultipleProofs = require('../config/cloudinary')
 
 const router = express.Router();
@@ -14,5 +14,5 @@ router.post(
     ]), 
     registerUser
 );
-
+router.post('/login', loginUser);
 module.exports = router;

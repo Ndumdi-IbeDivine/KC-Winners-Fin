@@ -7,6 +7,7 @@ const connectDatabase = require("./config/connectDB.js");
 const authRouter = require('./routes/authRoutes.js');
 const contributionRouter = require('./routes/contributionRoutes.js');
 const adminRouter = require('./routes/adminRoutes.js');
+const userRouter = require('./routes/userRoutes.js')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/contribution', contributionRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/user', userRouter);
 
 // Start Server
 

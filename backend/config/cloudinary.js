@@ -20,12 +20,6 @@ const registrationStorage = new CloudinaryStorage({
             }
         }
 
-        if (file.fieldname === 'clearanceProof') {
-            return {
-                folder: 'kcwinners/clearance-proofs', 
-                allowed_formats: ['jpg', 'png', 'jpeg', 'pdf'],
-            }
-        }
     }
 });
 
