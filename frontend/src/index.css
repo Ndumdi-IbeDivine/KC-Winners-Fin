@@ -31,11 +31,11 @@ body {
 }
 
 button {
-  background-color: #290fae;
+  background-color: #290f;
   cursor: pointer;
 }
 button:hover {
-  background-color: #1a1a1a;
+  background-color: #6dae77;
 }
 button:focus,
 button:focus-visible {
