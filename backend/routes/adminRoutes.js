@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { getUsersWithUnverifiedProofs, verifyRegistration, verifyClearance, } = require('../controller/adminController')
+const { getUsersWithUnverifiedProofs, verify, remindUser } = require('../controller/adminController')
 
-router.get('/unverified-proofs', getUsersWithUnverifiedProofs);
+router.get('/user/unverified-proofs', getUsersWithUnverifiedProofs);
 
-router.patch('/verify-registration/user:id', verifyRegistration);
+router.post('/verify', verify);
 
-router.patch('/verify-clearance/user:id', verifyClearance);
+router.post('/user/remind/user:id', remindUser);
+
+// router.patch('/verify-clearance/user:id', verifyClearance);
 
 module.exports = router;
