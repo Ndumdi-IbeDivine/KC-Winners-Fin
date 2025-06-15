@@ -6,12 +6,12 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
 
   // Replace with your actual backend base URL
-  const BASE_URL = 'http://localhost:5000/api/admin';
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URI;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/users`);
+        const res = await fetch(`${BASE_URL}/api/admin/users`);
         const data = await res.json();
 
         if (Array.isArray(data)) {
