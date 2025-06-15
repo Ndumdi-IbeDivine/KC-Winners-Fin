@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, );
 
   const handleVerify = async (userId, type) => {
     try {
