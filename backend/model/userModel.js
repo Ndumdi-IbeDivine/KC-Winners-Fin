@@ -74,6 +74,10 @@ const User = sequelize.define('User', {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    regStatus: {
+      type: DataTypes.STRING,
+      defaultValue: 'Pending'
+    }
 }, {
     tableName: 'Users',
     timestamps: true,
