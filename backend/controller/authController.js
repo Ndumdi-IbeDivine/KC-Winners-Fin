@@ -61,7 +61,7 @@ const registerUser = async (req, res) => {
             numberOfAccounts, 
             proofOfPaymentUrl: registrationProofUrl,
             depositorName,
-
+            regStaus: 'Pending'
         });
 
         const contributions = [];
@@ -73,9 +73,12 @@ const registerUser = async (req, res) => {
             })
         }
         await Contribution.bulkCreate(contributions);
+
+        console.log(req.body, req.files);
+        
     
         res.status(201).json({ 
-            message: 'User registered Succesfully with profile and contributions', 
+            message: 'User registered Succesfully Registration pending admin verification', 
             user: newUser,
         });
         
