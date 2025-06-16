@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const RegistrationForm = () => {
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URI;
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -23,50 +24,91 @@ const RegistrationForm = () => {
     depositorName: '',
   });
 
-  const [registrationProof, setRegistrationProof] = useState(null);
-  const [clearanceProof, setClearanceProof] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-
-  const handleChange = e =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleFileChange = (e, type) => {
-    const file = e.target.files[0];
-    if (type === 'registration') setRegistrationProof(file);
-    else setClearanceProof(file);
+  const resetForm = () => {
+    setFormData({
+      fullName: '',
+      email: '',
+      phone: '',
+      password: '',
+      sex: '',
+      address: '',
+      nextOfKin: '',
+      nextOfKinPhone: '',
+      nextOfKinAddress: '',
+      bankName: '',
+      accountNumber: '',
+      numberOfAccounts: '',
+      depositorName: '',
+    });
+    setRegistrationProof(null);
   };
 
-  const handleSubmit = async e => {
+  const [registrationProof, setRegistrationProof] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+
+  // const [message, setMessage] = useState('');
+
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value 
+    });
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setRegistrationProof(file);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
-
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-    });
-
-    if (registrationProof)
-      data.append('registrationProof', registrationProof);
-    if (clearanceProof)
-      data.append('clearanceProof', clearanceProof);
+    setError(null);
+    setSuccess(null);
 
     try {
-      console.log('Submitting registration data...', data);
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, 
-        data,
-        { withCredentials: true }
-      );
-      setMessage('Registration successful!');
-      console.log(res.data);
-      navigate('/account');
+      const submissionData = new FormData();
+      // append all fields
+      submissionData.append('fullName', formData.fullName);
+      submissionData.append('email', formData.email);
+      submissionData.append('phone', formData.phone);
+      submissionData.append('password', formData.password);
+      submissionData.append('sex', formData.sex);
+      submissionData.append('address', formData.address);
+      submissionData.append('nextOfKin', formData.nextOfKin);
+      submissionData.append('nextOfKinPhone', formData.nextOfKinPhone);
+      submissionData.append('nextOfKinAddress', formData.nextOfKinAddress);
+      submissionData.append('bankName', formData.bankName);
+      submissionData.append('accountNumber', formData.accountNumber);
+      submissionData.append('numberOfAccounts', formData.numberOfAccounts);
+      submissionData.append('depositorName', formData.depositorName);
+      if (registrationProof) {
+        submissionData.append('registrationProof', registrationProof);
+      }
+
+      const res = await axios.post(`${BASE_URL}/api/auth/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      setSuccess("Registration submitted successfully. Awaiting admin verification.");
+      resetForm(); // reset fields
+      setTimeout(() => {
+        navigate('/account');
+      }, 2000);
+
+
     } catch (err) {
-      setMessage('Registration failed.');
-      console.error('Error Submitting Registration', err.response?.data || err.message);
+      setError(err.message);
     } finally {
-      setLoading(false);
+    setLoading(false);
     }
   };
 
@@ -284,7 +326,7 @@ const RegistrationForm = () => {
             {/* File Uploads */}
             <div className="md:col-span-2">
               <label className="block mb-1 font-medium text-gray-700">Upload Registration Proof</label>
-              <input type="file" accept="image/*,application/pdf" onChange={e => handleFileChange(e, 'registration')} required className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer bg-white focus:outline-none"/>
+              <input type="file" accept="image/*,application/pdf" onChange={handleFileChange} required className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer bg-white focus:outline-none"/>
             </div>
 
             {/* Submit */}
@@ -295,7 +337,8 @@ const RegistrationForm = () => {
                 className="w-full bg-green-600 hover:bg-black text-white font-bold py-3 px-6 rounded mt-4 transition duration-200">
                 {loading ? 'Submitting...' : 'Register Now'}
               </button>
-              {message && <p className="mt-3 text-red-600">{message}</p>}
+              {success && <div className="text-green-600 mt-2">{success}</div>}
+              {error && <div className="text-red-600 mt-2">{error}</div>}
             </div>
           </form>
         </div>
