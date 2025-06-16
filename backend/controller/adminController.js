@@ -1,7 +1,8 @@
 const User = require('../model/userModel');
+const { op } = require('sequelize');
 
 
-// To get all users that havent been verified
+// Get users with unverified registration proofs
 const getUsersWithUnverifiedProofs = async (req, res) => {
 
     try {
@@ -11,7 +12,6 @@ const getUsersWithUnverifiedProofs = async (req, res) => {
                 [Op.or]:
                     [
                         { registrationVerified: false },
-                        { clearanceVerified: false }
                     ]
             }
         });
@@ -25,49 +25,53 @@ const getUsersWithUnverifiedProofs = async (req, res) => {
 }
 
 
-//  To verify registration payment
+//  To verify registration
 const verifyRegistration = async (req, res) => {
+    
+  const { userId } = req.body;
 
-    const userId = req.params
+  if (!userId) {
+    return res.status(400).json({ error: 'UserId is required' });
+  }
 
-    try {
+  try {
+    
+    const user = await User.findByIdAndUpdate(userId, 
+        { regStatus: 'Verified' },
+        { new: true }
+    );
 
-        const user = await User.findByPk(userId);
-        if(!user) return res.status(404).json({ message: 'User not found'});
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-        user.clearanceVerified = true;
-        await user.save();
-
-        res.status(200).json({ message: 'Registration Proof Verified', user});
-        
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error'});
-    }
+    res.json({ message: 'Registration proof verified succesfully' });
+  } catch (err) {
+    console.error('Verification error:', err);
+    res.status(500).json({ error: 'Verification failed' });
+  }
 }
 
-// To verify clearance payment
-const verifyClearance = async (req, res) => {
 
-    const userId = req.params
+const remindUser = async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
     try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const user = await User.findByPk(userId);
-        if(!user) return res.status(404).json({ message: 'User not found'});
+        // TODO: Replace this with actual email sending logic
+        console.log(`Sending reminder to ${user.email}...`);
 
-        user.registrationVerified = true;
-        await user.save();
-
-        res.status(200).json({ message: 'Clearance Proof Verified', user});
-        
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error'});
-    }
+        res.json({ message: `Reminder sent to ${user.email}` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to send reminder' });
+  }
 }
-
 
 module.exports = {
     getUsersWithUnverifiedProofs,
     verifyRegistration,
-    verifyClearance,
+    remindUser
 }
