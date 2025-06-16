@@ -13,14 +13,8 @@ const AdminDashboard = () => {
       try {
         const res = await fetch(`${BASE_URL}/api/admin/users`);
         const data = await res.json();
+        setUsers(data);
 
-        if (Array.isArray(data)) {
-          setUsers(data);
-        } else if (Array.isArray(data.users)) {
-          setUsers(data.users);
-        } else {
-          throw new Error('Unexpected response format');
-        }
       } catch (err) {
         console.error('Error fetching users:', err);
         setError('Failed to fetch users.');
@@ -31,27 +25,26 @@ const AdminDashboard = () => {
     };
 
     fetchUsers();
-  }, );
+  }, []);
 
-  const handleVerify = async (userId, type) => {
+  const handleVerify = async (userId) => {
     try {
-      const res = await fetch(`${BASE_URL}/verify`, {
+      const res = await fetch(`${BASE_URL}/api/admin/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, type }) // type = 'reg' or 'clearance'
+        body: JSON.stringify({ userId })
       });
 
       const data = await res.json();
       alert(data.message || 'User verified');
 
-      // Refresh users
+      // Refresh users in UI
       setUsers(prev =>
         prev.map(u =>
           u._id === userId
             ? {
                 ...u,
-                regStatus: type === 'reg' ? 'Verified' : u.regStatus,
-                clearanceStatus: type === 'clearance' ? 'Verified' : u.clearanceStatus
+                regStatus: 'Verified'
               }
             : u
         )
@@ -95,7 +88,6 @@ const AdminDashboard = () => {
                 <th className="border px-4 py-2">Name</th>
                 <th className="border px-4 py-2">Email</th>
                 <th className="border px-4 py-2">Reg Status</th>
-                <th className="border px-4 py-2">Clearance Status</th>
                 <th className="border px-4 py-2">Proof</th>
                 <th className="border px-4 py-2">Actions</th>
               </tr>
@@ -106,7 +98,6 @@ const AdminDashboard = () => {
                   <td className="border px-4 py-2">{user.name}</td>
                   <td className="border px-4 py-2">{user.email}</td>
                   <td className="border px-4 py-2">{user.regStatus}</td>
-                  <td className="border px-4 py-2">{user.clearanceStatus}</td>
                   <td className="border px-4 py-2">
                     {user.proofUrl ? (
                       <a
@@ -126,13 +117,7 @@ const AdminDashboard = () => {
                       onClick={() => handleVerify(user._id, 'reg')}
                       className="bg-green-500 text-white px-2 py-1 rounded text-xs"
                     >
-                      Verify Reg
-                    </button>
-                    <button
-                      onClick={() => handleVerify(user._id, 'clearance')}
-                      className="bg-green-600 text-white px-2 py-1 rounded text-xs"
-                    >
-                      Verify Clearance
+                      Verify Registration
                     </button>
                     <button
                       onClick={() => handleRemind(user._id)}
