@@ -86,15 +86,15 @@ const RegistrationForm = () => {
         submissionData.append('registrationProof', registrationProof);
       }
 
-      const res = await axios.post(`${BASE_URL}/api/auth/register`, formData, {
+      const res = await axios.post(`${BASE_URL}/api/auth/register`, submissionData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      const data = await res.json();
+      const data = await res.data;
 
-      if (!res.ok) {
+      if (!res.status === 200) {
         throw new Error(data.message || 'Registration failed');
       }
 
