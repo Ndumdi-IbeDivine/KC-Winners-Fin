@@ -58,14 +58,14 @@ const registerUser = async (req, res) => {
             nextOfKin,
             nextOfKinPhone,
             nextOfKinAddress,
-            numberOfAccounts, 
+            numberOfAccounts:parseInt(numberOfAccounts), 
             proofOfPaymentUrl: registrationProofUrl,
             depositorName,
-            regStaus: 'Pending'
+
         });
 
         const contributions = [];
-        for (let i = 1; i <= numberOfAccounts; i++) {
+        for (let i = 1; i <=  parseInt(numberOfAccounts); i++) {
             contributions.push({
                 userId: newUser.id,
                 contributionName: `Contibution #${i}`,
@@ -74,16 +74,16 @@ const registerUser = async (req, res) => {
         }
         await Contribution.bulkCreate(contributions);
 
-        console.log(req.body, req.files);
-        
+        console.log("✅ Registration Body:", req.body);
+        console.log("✅ Registration File:", req.file);
     
         res.status(201).json({ 
-            message: 'User registered Succesfully Registration pending admin verification', 
+            message: 'User registered Succesfully with profile and contributions', 
             user: newUser,
         });
         
     } catch (error) {
-        console.error('Registration error:', error)
+        console.error('Registration error:', error.message)
         res.status(500).json({ message: 'Server error'})
     }
 };
