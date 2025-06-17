@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://startling-caramel-13534a.netlify.app/'
+    'https://startling-caramel-13534a.netlify.app'
   ],
   credentials: true
 }));
