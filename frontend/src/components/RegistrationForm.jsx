@@ -70,7 +70,6 @@ const RegistrationForm = () => {
       const submissionData = new FormData();
       // append all fields
       submissionData.append('fullName', formData.fullName);
-      submissionData.append('email', formData.email);
       submissionData.append('phone', formData.phone);
       submissionData.append('password', formData.password);
       submissionData.append('sex', formData.sex);
@@ -115,33 +114,64 @@ const RegistrationForm = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       
-      <div className="w-full max-w-5xl bg-yellow-100 shadow-2xl rounded-2xl p-6 sm:p-10">
+      <div className="w-full max-w-5xl bg-yellow-200 shadow-2xl rounded-2xl p-6 sm:p-10">
 
         <h1 className="text-3xl font-bold text-center mb-4 text-green-900">
-          KC-WINNERS CONTRIBUTION REGISTRATION
+          KC WINNERS WEALTH SOLUTION INITIATIVE REGISTRATION
         </h1>
 
         {/* 🔷 Instructions */}
         <div className="bg-blue-50 border border-blue-300 p-4 rounded mb-8 text-sm text-gray-700 whitespace-pre-wrap">
-          Welcome to KCWINNERS Wealth Solution Initiative — a division of KCWINNERS Global Industries Limited.
+          Welcome to KC WINNERS Wealth Solution Initiative — a division of KCWINNERS Global Industries Limited.
 
-          📝 To register:
-          - Pay ₦3,000 Registration Fee 
-          - Contribute ₦2,000 weekly for 30 weeks (7 months) — every Thursday
-          - Defaulting attracts double payment
-          - Pay ₦5,000 Clearance Fee
-          - Receive ₦100,000 + 10% in foodstuff at end
+          <br />
+          This is a new contibution scheme that allows members to contribute N2,000 on or before Thursdays of every week
 
-          📌 Payment Info:
+          <br />
+          <br />
+          📝 TO REGISTER:
+          - Pay ₦3,000 Registration Fee
+          - Upload payment receipt in registration form 
+          <br />
+          📌 PAYMENT INFO:
           Bank: Fidelity Bank
           Account No: 5600472456
           Name: KCWINNERS GLOBAL INDUSTRIALS LIMITED
 
+          <br />
+          <br />
+          ❗TERMS AND CONDITION
+          <br />
+          - Contribution of ₦2,000 weekly for 30 weeks(7 months) — on or before every Thursday
+          <br />
+          - Defaulting of contribution payment attracts double payment of total amount owed
+          <br />
+          - NO transfer of funds from one person, one member to a registered account
+          <br />
+          - Every member is expected to have a referral within 3 months from start date, in the case of no referaal Member(s) will collect the ₦60,000 savings without incentives
+          <br />
+          - For 50 account and above, Members are expected to complete their payment in four(4) parts
+          <br />
+          - Every default payment and clearance fee of ₦2,000 must be payed before any settlement
+          <br />
+          - Receive ₦100,000 in return for the ₦60,000 contribution + 20% incentive in foodstuffs at the end of contribution
+          <br />
+          - In case of death/unforseen circumstances, the Next of KIn is expected to complete savings and pay all outstanding defaults to the said period as stated above. NOTE: A grace period of one month(4 weeks) would be given too report the situation to the organization
+          <br />
+          <p><strong>⚠️ NOTE: THERE IS NO REFUND OF MONEY IN THE CASE OF BREACH OF CONTRACT</strong></p>
+
+
+          <br />
+          <br />
           📤 Upload:
           - Proof of ₦3,000 registration payment
-          - Proof of ₦5,000 clearance fee payment
-          - If account holder name isn’t visible, include depositor name
+          - If account holder name isn’t visible(if you used POS), include depositor name
+          <br />
           - One user can have multiple contribution accounts
+
+          <br />
+          <br />
+          <p className="text-300 font-bold text-center mb-4 text-green-900">REGISTER BELOW</p>
         </div>
 
         {/* 🧾 Form */}
@@ -160,20 +190,6 @@ const RegistrationForm = () => {
                 id="fullName"
                 onChange={handleChange}
                 placeholder="Enter your full name"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block mb-1 font-medium text-gray-700" htmlFor="email">Email</label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                onChange={handleChange}
-                placeholder="Enter your email"
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
