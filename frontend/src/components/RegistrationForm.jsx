@@ -117,12 +117,12 @@ const RegistrationForm = () => {
       <div className="w-full max-w-5xl bg-yellow-200 shadow-2xl rounded-2xl p-6 sm:p-10">
 
         <h1 className="text-3xl font-bold text-center mb-4 text-green-900">
-          KC WINNERS WEALTH SOLUTION INITIATIVE REGISTRATION
+          KCWINNERS WEALTH SOLUTION INITIATIVE REGISTRATION
         </h1>
 
         {/* 🔷 Instructions */}
         <div className="bg-blue-50 border border-blue-300 p-4 rounded mb-8 text-sm text-gray-700 whitespace-pre-wrap">
-          Welcome to KC WINNERS Wealth Solution Initiative — a division of KCWINNERS Global Industries Limited.
+          Welcome to KCWINNERS Wealth Solution Initiative — a division of KCWINNERS Global Industries Limited.
 
           <br />
           This is a new contibution scheme that allows members to contribute N2,000 on or before Thursdays of every week
