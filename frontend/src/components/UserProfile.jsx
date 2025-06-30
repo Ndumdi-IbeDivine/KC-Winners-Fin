@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
+import UserContributionsModal from './UserContributionModal';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -31,18 +33,36 @@ const Navbar = () => {
 };
 
 const UserProfile = () => {
+  const [user, setUser] = useState(null);
+  const BASE_URL = import.meta.env.VITE_APP_BASE_URI;
+  const token = localStorage.getItem('token');
+  const [showContribModal, setShowContribModal] = useState(false);
+  const [activeUserId, setActiveUserId] = useState(null);
+
+  const openContribModal = (id) => {
+  setActiveUserId(id);
+  setShowContribModal(true);
+  };  
+
   const navigate = useNavigate();
 
-    // Placeholder data – replace with real user data from props/context later
-  const user = {
-    name: 'Jane Doe',
-    email: 'janedoe@example.com',
-    phone: '08012345678',
-    contributions: [
-      { id: 1, status: 'Active', balance: '₦10,000' },
-      { id: 2, status: 'Pending', balance: '₦4,000' },
-    ],
-  };
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUser(res.data.user);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+  
 
   const handleWithdraw = () => {
     //  Trigger withdrawal action
@@ -50,6 +70,7 @@ const UserProfile = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-gray-100 py-10 px-6">
       <Navbar />
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-md p-6">
@@ -63,12 +84,20 @@ const UserProfile = () => {
 
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-2">Contribution Accounts</h2>
-          <div className="space-y-2">
+          <div className="space-y-4">
             {user.contributions.map((c) => (
-              <div key={c.id} className="border p-3 rounded-md bg-gray-50">
+              <div key={c.id} className="border p-4 rounded-md bg-gray-50">
                 <p><strong>Account #{c.id}</strong></p>
                 <p>Status: <span className="font-medium">{c.status}</span></p>
-                <p>Balance: <span className="font-medium">{c.balance}</span></p>
+                <p>Balance: <span className="font-medium">₦{c.balance}</span></p>
+                <div className="mt-3">
+                  <button
+                    onClick={() => openContribModal(c.id)}
+                    className="rounded-md bg-blue-600 px-3 py-1 text-white hover:bg-blue-700"
+                  >
+                    View
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -76,12 +105,20 @@ const UserProfile = () => {
 
         <button
           onClick={handleWithdraw}
-          className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+          className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 mt-6"
         >
           Withdraw
         </button>
       </div>
     </div>
+
+    <UserContributionsModal
+    userId={activeUserId}
+    isOpen={showContribModal}
+    onClose={() => setShowContribModal(false)}
+    />
+   </>
+
   );
 };
 
