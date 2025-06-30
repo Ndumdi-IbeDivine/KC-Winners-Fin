@@ -74,11 +74,11 @@ const RegistrationForm = () => {
       submissionData.append('password', formData.password);
       submissionData.append('sex', formData.sex);
       submissionData.append('address', formData.address);
+      submissionData.append('bankName', formData.bankName);
+      submissionData.append('accountNumber', formData.accountNumber);
       submissionData.append('nextOfKin', formData.nextOfKin);
       submissionData.append('nextOfKinPhone', formData.nextOfKinPhone);
       submissionData.append('nextOfKinAddress', formData.nextOfKinAddress);
-      submissionData.append('bankName', formData.bankName);
-      submissionData.append('accountNumber', formData.accountNumber);
       submissionData.append('numberOfAccounts', formData.numberOfAccounts);
       submissionData.append('depositorName', formData.depositorName);
       if (registrationProof) {
@@ -134,7 +134,7 @@ const RegistrationForm = () => {
           - Upload payment receipt in registration form 
           <br />
           📌 PAYMENT INFO:
-          Bank: Fidelity Bank
+          Bank: FIDELITY BANK
           Account No: 5600472456
           Name: KCWINNERS GLOBAL INDUSTRIALS LIMITED
 
@@ -251,6 +251,32 @@ const RegistrationForm = () => {
               />
             </div>
 
+            {/* Bank Name */}
+            <div>
+              <label className="block mb-1 font-medium text-gray-700" htmlFor="bankName">Bank Name</label>
+              <input
+                name="bankName"
+                id="bankName"
+                onChange={handleChange}
+                placeholder="Your bank name"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Account Number */}
+            <div>
+              <label className="block mb-1 font-medium text-gray-700" htmlFor="accountNumber">Account Number</label>
+              <input
+                name="accountNumber"
+                id="accountNumber"
+                onChange={handleChange}
+                placeholder="Your account number"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
             {/* Next of Kin */}
             <div>
               <label className="block mb-1 font-medium text-gray-700" htmlFor="nextOfKin">Next of Kin</label>
@@ -285,32 +311,6 @@ const RegistrationForm = () => {
                 id="nextOfKinAddress"
                 onChange={handleChange}
                 placeholder="Address of next of kin"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Bank Name */}
-            <div>
-              <label className="block mb-1 font-medium text-gray-700" htmlFor="bankName">Bank Name</label>
-              <input
-                name="bankName"
-                id="bankName"
-                onChange={handleChange}
-                placeholder="Your bank name"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Account Number */}
-            <div>
-              <label className="block mb-1 font-medium text-gray-700" htmlFor="accountNumber">Account Number</label>
-              <input
-                name="accountNumber"
-                id="accountNumber"
-                onChange={handleChange}
-                placeholder="Your account number"
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
