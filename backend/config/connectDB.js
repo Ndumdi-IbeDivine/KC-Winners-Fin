@@ -1,21 +1,12 @@
-const sequelize = require('./db');
-require('../model/userModel.js');
-// require('../model/userProfile.js');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-
-// connecting databse
 const connectDatabase = async () => {
   try {
-    await sequelize.authenticate();
-    console.log("Database connected successfully");
-   
-    console.log("Loaded models:", sequelize.models);
-    await sequelize.sync({ force: true})
-    console.log('Tables have been synced')
-
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('MongoDB connected successfully');
   } catch (error) {
-    console.error("Database connection failed:", error);
+    console.error('Database connection failed:', error);
     throw error;
   }
 };

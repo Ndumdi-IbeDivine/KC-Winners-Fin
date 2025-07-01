@@ -1,16 +1,15 @@
-const express = require("express");
-require("dotenv").config();
+const express = require('express');
 const cors = require('cors');
-// const path = require('path');
+const path = require('path');
+const connectDatabase = require('./config/connectDB');
 
-const connectDatabase = require("./config/connectDB.js");
-const authRouter = require('./routes/authRoutes.js');
-const contributionRouter = require('./routes/contributionRoutes.js');
-const adminRouter = require('./routes/adminRoutes.js');
-const userRouter = require('./routes/userRoutes.js')
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const contributionRoutes = require('./routes/contributionRoutes');
+const withdrawalRoutes = require('./routes/withdrawalRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
@@ -20,25 +19,53 @@ app.use(cors({
   ],
   credentials: true
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Default Route
-app.get("/", (req, res) => {
-  res.send("Welcome to KC Winners API");
-});
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/contributions', contributionRoutes);
+app.use('/api/withdrawals', withdrawalRoutes);
 
-
-app.use('/api/auth', authRouter);
-app.use('/api/contribution', contributionRouter);
-app.use('/api/admin', adminRouter);
-app.use('/api/user', userRouter);
-
-// Start Server
-
-connectDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Health check
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'API is running',
+    timestamp: new Date().toISOString()
   });
-}).catch((err) => {
-  console.error("Failed to connect to the database:", err);
 });
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+  console.error('Error:', error);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!'
+  });
+});
+
+// 404 handler
+app.use('/{*any}', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Connect to database and start server
+connectDatabase()
+  .then(() => {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  });

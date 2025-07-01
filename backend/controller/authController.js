@@ -1,122 +1,146 @@
-const bcrypt = require('bcrypt');
-const { Op } = require('sequelize');
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const User = require('../model/userModel');
-const { Contribution } = require('../model/contributionModel');
 
-const registerUser = async (req, res) => {
-    const { 
-        fullName, 
-        email, 
-        phone, 
-        password,
-        sex,
-        address,
-        nextOfKin,
-        nextOfKinPhone,
-        nextOfKinAddress,
-        bankName, 
-        accountNumber,
-        numberOfAccounts, 
-        proofOfPaymentUrl,
-        depositorName,
+const generateToken = (userId) => {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_SECRET || 'your-secret-key',
+    { expiresIn: '7d' }
+  );
+};
 
-    } = req.body;
-
-    const registrationProofUrl = req.files?.registrationProof?.[0]?.path;
-
+  // Register user
+const register = async (req, res) => {
     try {
 
-        // To check if user exists
+        const registrationProofUrl = req.files?.registrationProof?.[0]?.path;
+
+        if (!registrationProofUrl) {
+            return res.status(400).json({ message: 'Proof of payment is required' });
+        }
+        
+        const {
+            fullName, phone, password, bankName, accountNumber,
+            sex, address, nextOfKin, nextOfKinPhone, nextOfKinAddress,
+            numberOfAccounts, depositorName
+        } = req.body;
+
+        // Check if user already exists
         const existingUser = await User.findOne({ 
-            where: {
-                [Op.or]: [{ email}, { phone}]
-            }
+            $or: [{ email }, { phone }] 
         });
-        if(existingUser) {
-            return res.status(400).json({ 
-                message: 
-                existingUser.email === email
-                ? 'Email already in use'
-                : 'Phone number already in use'
+
+        if (existingUser) {
+            return res.status(400).json({
+            success: false,
+            message: 'User with this email or phone already exists'
             });
         }
-    
-        // Hash Password
-        const hashedPassword = await bcrypt.hash(password, 10)
-    
-        // Create user
-        const newUser = await User.create({
-            fullName, 
-            email, 
-            phone, 
-            password: hashedPassword, 
-            bankName, 
+
+        // Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({
+            success: false,
+            message: 'Proof of payment is required'
+            });
+        }
+
+        // Create new user
+        const user = new User({
+            fullName,
+            phone,
+            password,
+            bankName,
             accountNumber,
             sex,
             address,
             nextOfKin,
             nextOfKinPhone,
             nextOfKinAddress,
-            numberOfAccounts:parseInt(numberOfAccounts), 
+            numberOfAccounts,
             proofOfPaymentUrl: registrationProofUrl,
-            depositorName,
-
+            depositorName
         });
 
-        const contributions = [];
-        for (let i = 1; i <=  parseInt(numberOfAccounts); i++) {
-            contributions.push({
-                userId: newUser.id,
-                contributionName: `Contibution #${i}`,
-                accountNumber,
-            })
-        }
-        await Contribution.bulkCreate(contributions);
+        await user.save();
 
-        console.log("✅ Registration Body:", req.body);
-        console.log("✅ Registration File:", req.file);
-    
-        res.status(201).json({ 
-            message: 'User registered Succesfully with profile and contributions', 
-            user: newUser,
+        // Generate JWT token
+        const token = generateToken(user._id);
+
+        res.status(201).json({
+            success: true,
+            message: 'Registration successful. Your account is pending verification.',
+            data: {
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                phone: user.phone,
+                regStatus: user.regStatus
+            },
+            token
+            }
         });
-        
-    } catch (error) {
-        console.error('Registration error:', error.message)
-        res.status(500).json({ message: 'Server error'})
+
+        } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Registration failed. Please try again.'
+        });
     }
-};
+  }
 
-
-const loginUser = async (req, res) => {
-
-    const { email, password } = req.body;
-
+  // Login user
+const login = async (req, res) => {
     try {
-        const user = await User.findOne({ where: { email } });
-        if (!user) return res.status(404).json({ message: "User not found" });
+      const { phone, password } = req.body;
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
-
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-        res.status(200).json({
-        message: "Login successful",
-        token,
-        user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        },
+      // Find user by name
+      const user = await User.findOne({ phone });
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid name or password'
         });
+      }
+
+      // Check password
+      const isPasswordValid = await user.comparePassword(password);
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
+      }
+
+      // Generate JWT token
+      const token = generateToken(user._id);
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user: {
+            id: user._id,
+            fullName: user.fullName,
+            phone: user.phone,
+            role: user.role,
+            regStatus: user.regStatus,
+            registrationVerified: user.registrationVerified
+          },
+          token
+        }
+      });
+
     } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ message: "Server error" });
+      console.error('Login error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Login failed. Please try again.'
+      });
     }
+  }
 
-}
 
-module.exports = { registerUser, loginUser };
+module.exports = { register, login };

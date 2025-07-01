@@ -23,6 +23,39 @@ const registrationStorage = new CloudinaryStorage({
     }
 });
 
-const uploadMultipleProofs = multer({ storage: registrationStorage })
+const contributionStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+        if (file.fieldname === 'contributionReceipt') {
+            return {
+                folder: 'kcwinners/contribution', 
+                allowed_formats: ['jpg', 'png', 'jpeg', 'pdf'],
+            }
+        }
 
-module.exports = uploadMultipleProofs;
+    }
+});
+
+const clearanceStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+        if (file.fieldname === 'registrationProof') {
+            return {
+                folder: 'kcwinners/clearance-proofs', 
+                allowed_formats: ['jpg', 'png', 'jpeg', 'pdf'],
+            }
+        }
+
+    }
+});
+
+
+const uploadRegistrationProof = multer({ storage: registrationStorage })
+const uploadContributionProof = multer({ storage: contributionStorage })
+const uploadClearanceProof = multer({ storage: clearanceStorage })
+
+module.exports = {
+    uploadRegistrationProof,
+    uploadContributionProof,
+    uploadClearanceProof
+};
