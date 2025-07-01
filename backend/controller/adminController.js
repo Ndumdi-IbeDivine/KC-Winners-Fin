@@ -1,7 +1,73 @@
 const User = require('../model/userModel');
 const Contribution = require('../model/contributionModel');
 const Withdrawal = require('../model/withdrawalModel');
+const Admin = require('../model/adminModel');
 
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
+const SALT_ROUNDS = 10;
+
+
+
+    //Admin Registration
+const registerAdmin = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        const existing = await Admin.findOne({ email });
+        if (existing) {
+        return res.status(400).json({ message: 'Admin already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+        const admin = await Admin.create({ 
+            name,
+            password: hashedPassword  
+            });
+
+        const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+        res.status(201).json({
+        message: 'Admin registered successfully',
+        token,
+        admin: {
+            id: admin._id,
+            name: admin.name,
+        }
+        });
+    } catch (err) {
+        console.error('Admin registration failed:', err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+    // Admin Login
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const admin = await Admin.findOne({ email });
+    if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    res.json({
+      message: 'Login successful',
+      token,
+      admin: {
+        id: admin._id,
+        name: admin.name,
+      }
+    });
+  } catch (err) {
+    console.error('Admin login failed:', err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+};
 
   // Get all pending registrations
 const getPendingRegistrations = async (req, res) => {
@@ -152,6 +218,8 @@ const getPendingWithdrawals = async (req, res) => {
 
 
 module.exports = {
+    registerAdmin,
+    loginAdmin,
     getPendingRegistrations,
     verifyRegistration,
     getPendingContributions,
