@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const contributionRoutes = require('./routes/contributionRoutes');
 const withdrawalRoutes = require('./routes/withdrawalRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
 // Middleware
@@ -29,6 +29,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contributions', contributionRoutes);
+app.use('/api/withdrawals', withdrawalRoutes);
 app.use('/api/withdrawals', withdrawalRoutes);
 
 // Health check
