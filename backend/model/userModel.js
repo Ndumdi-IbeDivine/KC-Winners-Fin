@@ -1,88 +1,112 @@
-const sequelize = require('../config/db');
-const { DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const User = sequelize.define('User', {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    fullName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-      validate: { isEmail: true },
-    },
-    phone: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    bankName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    accountNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    }, 
-    sex: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    nextOfKin: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    nextOfKinPhone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    nextOfKinAddress: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    numberOfAccounts: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    proofOfPaymentUrl: {
-        type: DataTypes.STRING, 
-        allowNull: false,
-    },
-    depositorName: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    registrationVerified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    },
-    clearanceVerified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    regStatus: {
-      type: DataTypes.STRING,
-      defaultValue: 'Pending'
-    }
+const userSchema = new mongoose.Schema({
+  fullName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  phone: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6
+  },
+  bankName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  accountNumber: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  sex: {
+    type: String,
+    required: true,
+    enum: ['male', 'female', 'other']
+  },
+  address: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  nextOfKin: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  nextOfKinPhone: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  nextOfKinAddress: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  numberOfAccounts: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  proofOfPaymentUrl: {
+    type: String,
+    required: true
+  },
+  depositorName: {
+    type: String,
+    trim: true
+  },
+  registrationVerified: {
+    type: Boolean,
+    default: false
+  },
+  clearanceVerified: {
+    type: Boolean,
+    default: false
+  },
+  regStatus: {
+    type: String,
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Pending'
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
+  totalContributions: {
+    type: Number,
+    default: 0
+  },
+  totalVerifiedContributions: {
+    type: Number,
+    default: 0
+  }
 }, {
-    tableName: 'Users',
-    timestamps: true,
+  timestamps: true
 });
 
-console.log(User === sequelize.model.User);
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
 
+// Compare password method
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
 module.exports = User;

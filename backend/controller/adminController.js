@@ -1,77 +1,159 @@
 const User = require('../model/userModel');
-const { op } = require('sequelize');
+const Contribution = require('../model/contributionModel');
+const Withdrawal = require('../model/withdrawalModel');
 
 
-// Get users with unverified registration proofs
-const getUsersWithUnverifiedProofs = async (req, res) => {
-
+  // Get all pending registrations
+const getPendingRegistrations = async (req, res) => {
     try {
-
-        const users = await User.findAll({
-            where: {
-                [Op.or]:
-                    [
-                        { registrationVerified: false },
-                    ]
-            }
+      const user = await User.findById(req.userId);
+      if (user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Admin access required'
         });
+      }
 
-        res.status(200).json(users);
-        
+      const pendingUsers = await User.find({ 
+        regStatus: 'Pending' 
+      }).select('-password').sort({ createdAt: -1 });
+
+      res.status(200).json({
+        success: true,
+        data: pendingUsers
+      });
+
     } catch (error) {
-        console.error('Fetch Error:', error)
-        res.status(500).json({ message: 'server error' });
+      console.error('Error fetching pending registrations:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Could not load pending registrations'
+      });
     }
-}
-
-
-//  To verify registration
-const verifyRegistration = async (req, res) => {
-    
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: 'UserId is required' });
   }
 
-  try {
-    
-    const user = await User.findByIdAndUpdate(userId, 
-        { regStatus: 'Verified' },
-        { new: true }
-    );
-
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
-    res.json({ message: 'Registration proof verified succesfully' });
-  } catch (err) {
-    console.error('Verification error:', err);
-    res.status(500).json({ error: 'Verification failed' });
-  }
-}
-
-
-const remindUser = async (req, res) => {
-    const { userId } = req.body;
-
-    if (!userId) return res.status(400).json({ error: 'User ID is required' });
-
+  // Verify user registration
+const verifyRegistration =  async (req, res) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+      const user = await User.findById(req.userId);
+      if (user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Admin access required'
+        });
+      }
 
-        // TODO: Replace this with actual email sending logic
-        console.log(`Sending reminder to ${user.email}...`);
+      const { userId } = req.params;
+      const { status, rejectionReason } = req.body;
 
-        res.json({ message: `Reminder sent to ${user.email}` });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to send reminder' });
+      if (!['Approved', 'Rejected'].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid status. Must be Approved or Rejected'
+        });
+      }
+
+      const updateData = {
+        regStatus: status,
+        registrationVerified: status === 'Approved',
+        registrationVerifiedBy: req.userId,
+        registrationVerifiedAt: new Date()
+      };
+
+      if (status === 'Rejected') {
+        updateData.registrationRejectionReason = rejectionReason;
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true }
+      ).select('-password');
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Registration ${status.toLowerCase()} successfully`,
+        data: updatedUser
+      });
+
+    } catch (error) {
+      console.error('Error verifying registration:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Could not verify registration'
+      });
+    }
   }
-}
+
+  // Get all pending contributions
+const getPendingContributions = async (req, res) => {
+    try {
+      const user = await User.findById(req.userId);
+      if (user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Admin access required'
+        });
+      }
+
+      const contributions = await Contribution.find({ status: 'pending' })
+        .populate('userId', 'fullName email phone')
+        .sort({ contributionDate: -1 });
+
+      res.status(200).json({
+        success: true,
+        data: contributions
+      });
+
+    } catch (error) {
+      console.error('Error fetching pending contributions:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Could not load pending contributions'
+      });
+    }
+  }
+
+  // Get all pending withdrawals
+const getPendingWithdrawals = async (req, res) => {
+    try {
+      const user = await User.findById(req.userId);
+      if (user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Admin access required'
+        });
+      }
+
+      const withdrawals = await Withdrawal.find({ status: 'pending' })
+        .populate('userId', 'fullName email phone totalVerifiedContributions')
+        .sort({ withdrawalDate: -1 });
+
+      res.status(200).json({
+        success: true,
+        data: withdrawals
+      });
+
+    } catch (error) {
+      console.error('Error fetching pending withdrawals:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Could not load pending withdrawals'
+      });
+    }
+  }
+
 
 module.exports = {
-    getUsersWithUnverifiedProofs,
+    getPendingRegistrations,
     verifyRegistration,
-    remindUser
+    getPendingContributions,
+    getPendingWithdrawals
 }

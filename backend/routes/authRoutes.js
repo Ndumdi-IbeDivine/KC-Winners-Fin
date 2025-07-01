@@ -1,17 +1,18 @@
 const express = require('express');
-const { registerUser, loginUser } = require('../controller/authController');
-const uploadMultipleProofs = require('../config/cloudinary')
+const { register, login} = require('../controller/authController');
+const { uploadRegistrationProof } = require('../config/cloudinary')
 
 const router = express.Router();
 
 
 router.post(
     '/register', 
-    uploadMultipleProofs.fields([
+    uploadRegistrationProof.fields([
         { name: 'registrationProof', maxCount: 1 },
     ]), 
-    registerUser
+    register
 );
-router.post('/login', loginUser);
+
+router.post('/login', login);
 
 module.exports = router;

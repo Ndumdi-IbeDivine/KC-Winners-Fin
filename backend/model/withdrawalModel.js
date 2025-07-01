@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const contributionSchema = new mongoose.Schema({
+const withdrawalSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -15,20 +15,23 @@ const contributionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  clearanceReceiptUrl: {
+    type: String
+  },
   status: {
     type: String,
-    enum: ['pending', 'verified', 'rejected'],
+    enum: ['pending', 'cleared', 'rejected', 'completed'],
     default: 'pending'
   },
-  contributionDate: {
+  withdrawalDate: {
     type: Date,
     default: Date.now
   },
-  verifiedBy: {
+  clearedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  verifiedAt: {
+  clearedAt: {
     type: Date
   },
   rejectionReason: {
@@ -47,13 +50,13 @@ const contributionSchema = new mongoose.Schema({
 });
 
 // Generate reference before saving
-contributionSchema.pre('save', function(next) {
+withdrawalSchema.pre('save', function(next) {
   if (!this.reference) {
-    this.reference = `CONT-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    this.reference = `WITH-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
   }
   next();
 });
 
-const Contribution = mongoose.model('Contribution', contributionSchema);
+const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
-module.exports = Contribution;
+module.exports = Withdrawal;

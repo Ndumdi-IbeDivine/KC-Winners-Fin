@@ -25,9 +25,11 @@
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.1",
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0",
-    "validator":"13.9.0"
+    "validator": "13.9.0"
   },
   "engines": {
     "node": "20.x"
