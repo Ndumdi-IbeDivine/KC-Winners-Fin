@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/userModel');
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 10;
 
 const generateToken = (userId) => {
   return jwt.sign(
@@ -27,7 +29,7 @@ const register = async (req, res) => {
 
         // Check if user already exists
         const existingUser = await User.findOne({ 
-            $or: [{ email }, { phone }] 
+            $or: [{ fullName }, { phone }] 
         });
 
         if (existingUser) {
@@ -38,18 +40,20 @@ const register = async (req, res) => {
         }
 
         // Check if file was uploaded
-        if (!req.file) {
+        if (!req.files) {
             return res.status(400).json({
             success: false,
             message: 'Proof of payment is required'
             });
         }
 
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+
         // Create new user
         const user = new User({
             fullName,
             phone,
-            password,
+            password: hashedPassword,
             bankName,
             accountNumber,
             sex,
@@ -74,13 +78,13 @@ const register = async (req, res) => {
             user: {
                 id: user._id,
                 fullName: user.fullName,
-                email: user.email,
                 phone: user.phone,
                 regStatus: user.regStatus
             },
             token
             }
         });
+        console.log('Route working');
 
         } catch (error) {
         console.error('Registration error:', error);
