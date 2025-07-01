@@ -30,7 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contributions', contributionRoutes);
 app.use('/api/withdrawals', withdrawalRoutes);
-app.use('/api/withdrawals', withdrawalRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
