@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { X } from "lucide-react";             // npm i lucide-react
+import { X } from "lucide-react";
 
 const UserContributionsModal = ({ userId, isOpen, onClose }) => {
   const [contributions, setContributions] = useState([]);
@@ -47,7 +47,7 @@ const UserContributionsModal = ({ userId, isOpen, onClose }) => {
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+          className="absolute right-4 top-4 rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-500"
           aria-label="Close"
         >
           <X className="h-5 w-5" />
