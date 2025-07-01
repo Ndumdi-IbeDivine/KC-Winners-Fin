@@ -104,8 +104,9 @@ const RegistrationForm = () => {
       }
 
       resetForm(); // reset fields
+
       setTimeout(() => {
-        navigate('/account');
+        navigate('/user/account');
       }, 2000);
 
 

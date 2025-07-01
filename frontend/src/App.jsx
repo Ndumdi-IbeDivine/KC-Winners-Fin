@@ -4,6 +4,9 @@ import RegisterPage from './pages/RegistrationPage';
 import LoginPage from './pages/LoginPage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminRegisterPage from './pages/AdminRegisterPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+
 
 const App = () => {
   return (
@@ -11,8 +14,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/account" element={<UserProfilePage />} />
-        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/user/account" element={<UserProfilePage />} />
+        <Route path="/admin/register" element={<AdminRegisterPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/account" element={<AdminDashboardPage />} />
       </Routes>
     </Router>
   );
