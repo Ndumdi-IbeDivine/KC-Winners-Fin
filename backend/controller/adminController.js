@@ -12,9 +12,9 @@ const SALT_ROUNDS = 10;
     //Admin Registration
 const registerAdmin = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, password } = req.body;
 
-        const existing = await Admin.findOne({ email });
+        const existing = await Admin.findOne({ name });
         if (existing) {
         return res.status(400).json({ message: 'Admin already exists' });
         }
@@ -45,9 +45,9 @@ const registerAdmin = async (req, res) => {
     // Admin Login
 const loginAdmin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, password } = req.body;
 
-    const admin = await Admin.findOne({ email });
+    const admin = await Admin.findOne({ name });
     if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
 
     const isMatch = await bcrypt.compare(password, admin.password);
