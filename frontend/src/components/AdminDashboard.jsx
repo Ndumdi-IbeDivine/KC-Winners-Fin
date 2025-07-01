@@ -172,7 +172,7 @@ const AdminDashboard = () => {
                   <td className="border px-4 py-2">
                     <button
                       onClick={() => handleVerifyContribution(c._id)}
-                      className="bg-green-600 text-white px-3 py-1  text-xs"
+                      className="bg-green-600 text-white px-3 py-1 rounded text-xs"
                     >
                       Verify
                     </button>
