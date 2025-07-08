@@ -99,15 +99,11 @@ const RegistrationForm = () => {
 
       setSuccess("Registration submitted successfully. Awaiting admin verification.");
 
-      if (res.data?.data?.token) {
-        localStorage.setItem('token', res.data.data.token);
-      }
-
       resetForm(); // reset fields
 
       setTimeout(() => {
-        navigate('/user/account');
-      }, 2000);
+        navigate('/login');
+      }, 2500);
 
 
     } catch (err) {

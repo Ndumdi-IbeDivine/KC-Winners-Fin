@@ -18,20 +18,25 @@ const LoginForm = () => {
     setError('');
     setSuccess('');
 
+    console.log('Sending to backend:', { phone, password });
+
     try {
+        const sanitizedPhone = phone.trim().replace(/\s+/g, '');
       const { data } = await axios.post(
         `${BASE_URL}/api/auth/login`,
-        { phone, password },
+        { phone: sanitizedPhone, password },
         { headers: { 'Content-Type': 'application/json' } }
+
       );
 
+      console.log('Login response:', data);
       // Store token
       if (data.token) {
         localStorage.setItem('token', data.token);
       }
 
       setSuccess('Login successful! Redirecting…');
-      setTimeout(() => navigate('/account'), 1500);
+      setTimeout(() => navigate('/user/account'), 2500);
     } catch (err) {
       console.error(err);
       setError(

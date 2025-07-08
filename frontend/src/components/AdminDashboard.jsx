@@ -5,7 +5,11 @@ const AdminDashboard = () => {
   const [pendingContributions, setPendingContributions] = useState([]);
   const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState({});
+  const [rejectionReasons, setRejectionReasons] = useState({});
+
   const BASE_URL = import.meta.env.VITE_APP_BASE_URI;
+  
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -27,9 +31,10 @@ const AdminDashboard = () => {
         const contData = await contRes.json();
         const withdrawData = await withdrawRes.json();
 
-        setPendingUsers(regData || []);
-        setPendingContributions(contData || []);
-        setPendingWithdrawals(withdrawData || []);
+        setPendingUsers(Array.isArray(regData) ? regData : regData.users || []);
+        setPendingContributions(Array.isArray(contData) ? contData : contData.contributions || []);
+        setPendingWithdrawals(Array.isArray(withdrawData) ? withdrawData : withdrawData.withdrawals || []);
+        
       } catch (err) {
         console.error('Error fetching data:', err);
       } finally {
@@ -40,14 +45,44 @@ const AdminDashboard = () => {
     fetchAll();
   }, []);
 
+  const handleStatusChange = (userId, value) => {
+    setSelectedStatus(prev => ({ ...prev, [userId]: value }));
+  };
+
+  const handleReasonChange = (userId, value) => {
+    setRejectionReasons((prev) => ({ ...prev, [userId]: value }));
+  };
+
   const handleVerifyUser = async (userId) => {
+
+    const status = selectedStatus[userId];
+
+    if(!status) {
+      alert('Please select a status');
+      return;
+    }
+
+    const payload = { status };
+
+    if(status === 'Rejected') {
+      const reason = rejectionReasons[userId];
+      if (!reason) {
+        alert('Please provide reason for rejection');
+        return;
+      }
+        payload.rejectionReason = reason;
+      }
+
     try {
+
       const res = await fetch(`${BASE_URL}/api/admin/registrations/${userId}/verify`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify(payload),
+
       });
       const data = await res.json();
       alert(data.message || 'User verified');
@@ -125,8 +160,28 @@ const AdminDashboard = () => {
                     </a>
                   </td>
                   <td className="border px-4 py-2">
+                    <select
+                      value={selectedStatus[user._id] || ''}
+                      onChange={(e) => handleStatusChange(user._id, e.target.value)}
+                      className="border rounded px-2 py-1 mr-2"
+                    >
+                      <option value="">Select Action</option>
+                      <option value="Approved">Approve</option>
+                      <option value="Rejected">Reject</option>
+                    </select>
+
+                    {selectedStatus[user._id] === 'Rejected' && (
+                      <input
+                        type="text"
+                        placeholder="Reason for rejection"
+                        value={rejectionReasons[user._id] || ''}
+                        onChange={(e) => handleReasonChange(user._id, e.target.value)}
+                      />
+                    )}
+
                     <button
                       onClick={() => handleVerifyUser(user._id)}
+                      disabled={!selectedStatus[user._id]}
                       className="bg-green-600 text-white px-3 py-1 rounded text-xs"
                     >
                       Verify

@@ -29,13 +29,17 @@ const AdminRegisterForm = () => {
     try {
       const res = await axios.post(`${BASE_URL}/api/admin/register`, formData);
 
-      localStorage.setItem('adminToken', res.data.token);
-
-      setMessage('Registration successful! You are now logged in.');
+        if (res.status === 201) {
+        // store token and continue
+        setMessage('Registration successful! Taking you to login.');
 
         setTimeout(() => {
-        navigate('/admin/account');
-      }, 2000);
+            navigate('/admin/login');
+        }, 2500);
+        } else {
+        // server responded but something’s missing
+        throw new Error(res.data?.message || 'Unexpected server response');
+        }
 
     } catch (err) {
       console.error(err);
@@ -79,7 +83,7 @@ const AdminRegisterForm = () => {
         {loading ? 'Registering...' : 'Register as Admin'}
       </button>
 
-      {message && <p className="text-center text-sm mt-2 text-red-600">{message}</p>}
+      {message && <p className="text-center text-sm mt-2 text-green-600">{message}</p>}
     </form>
   );
 };
