@@ -15,7 +15,7 @@ const AdminLoginForm = () => {
     setMessage('');
     try {
       const res = await axios.post(`${BASE_URL}/api/admin/login`, { name, password });
-      localStorage.setItem('adminToken', res.data.token);
+      localStorage.setItem('token', res.data.token);
       setMessage('Login successful!');
 
         setTimeout(() => {
